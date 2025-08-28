@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>Skate Ball Smash</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div id="app">
+        <header class="hud">
+            <div class="hud-left">
+                <span class="brand" aria-label="Brains Tech">
+                    <img class="brand-icon" src="favicon.png" alt="Brains Tech" />
+                    <span class="brand-text">Brains Tech</span>
+                </span>
+            </div>
+            <div class="hud-center">
+                <span id="score">Score: 0</span>
+                <span id="combo" class="muted">Combo x1</span>
+                <span id="level">Level 1</span>
+            </div>
+            <div class="hud-right">
+                <button id="btnPause" aria-label="Pause">❚❚</button>
+                <button id="btnSound" aria-label="Sound">🔊</button>
+            </div>
+        </header>
+
+        <main class="stage-wrap">
+            <canvas id="gameCanvas"></canvas>
+            <div id="overlay" class="overlay hidden">
+                <div class="panel">
+                    <h1>Skate Ball Smash</h1>
+                    <p class="muted">Drag to move the skateboard. Break blocks. Collect power-ups.</p>
+                    
+                    <!-- Level Progress Indicator -->
+                    <div class="level-progress" id="levelProgress">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    
+                    <!-- Difficulty Indicator -->
+                    <div class="difficulty-indicator" id="difficultyIndicator">
+                        <span>Difficulty:</span>
+                        <div class="difficulty-bar" id="difficultyBar">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Speed Selection -->
+                    <div class="speed-selector" id="speedSelector">
+                        <span>Ball Speed:</span>
+                        <div class="speed-options">
+                            <button class="speed-btn active" data-speed="slow">Slow</button>
+                            <button class="speed-btn" data-speed="normal">Normal</button>
+                            <button class="speed-btn" data-speed="fast">Fast</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stats">
+                        <div>Best: <span id="bestScore">0</span></div>
+                        <div>Last: <span id="lastScore">0</span></div>
+                    </div>
+                    <button id="btnStart">Play</button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer muted">
+            <span>© <span id="year"></span>Nkosi - Skate Ball Smash</span>
+        </footer>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
+
+
