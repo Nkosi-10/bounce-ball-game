@@ -373,9 +373,11 @@
   function placePaddle() {
     try {
       world.paddleW = clamp(state.width * 0.28, 100, 220);
-      world.paddleH = PADDLE_HEIGHT;
       world.paddleX = state.width * 0.5 - world.paddleW * 0.5;
-      world.paddleY = state.height - world.paddleH - 18;
+      // Position paddle higher on mobile for thumb accessibility
+      const isMobile = state.width <= 480;
+      const paddleOffset = isMobile ? 100 : 18; // Higher position on mobile
+      world.paddleY = state.height - world.paddleH - paddleOffset;
     } catch (e) {
       console.error('Error placing paddle:', e);
     }
@@ -401,58 +403,49 @@
 
   function spawnLevel(level) {
     try {
-      world.blocks.length = 0;
-      const config = LEVEL_CONFIGS[Math.min(level - 1, LEVEL_CONFIGS.length - 1)];
+      world.blocks = [];
+      world.bullets = [];
+      world.meteors = [];
+      world.particles = [];
+      world.powerups = [];
+      world.level = level;
       
-      // Better block sizing for desktop and mobile
-      const isDesktop = state.width >= 600;
-      let blockSize, cols, gap, actualBlockSize;
+      const config = LEVEL_CONFIGS[level - 1] || LEVEL_CONFIGS[LEVEL_CONFIGS.length - 1];
+      const pattern = generateBlockPattern(config.pattern, 14, level);
       
-      if (isDesktop) {
-        // Desktop: optimal block size for 600px game area
-        cols = 12; // Fixed columns for consistent gameplay
-        blockSize = Math.floor((state.width - 40) / cols);
-        gap = 3;
-        actualBlockSize = blockSize - gap;
-      } else {
-        // Mobile: responsive sizing
-        const maxCols = Math.floor(state.width / 50);
-        cols = Math.min(8, maxCols);
-        blockSize = Math.floor((state.width - 40) / cols);
-        gap = 4;
-        actualBlockSize = blockSize - gap;
-      }
+      // Determine block size based on screen width
+      const isMobile = state.width <= 768;
+      const blockSize = isMobile ? Math.max(25, Math.floor(state.width / 14)) : 50;
+      const gap = 2;
+      const actualBlockSize = blockSize - gap;
       
-      const yStart = 70;
-      
-      // Generate pattern based on level configuration
-      const pattern = generateBlockPattern(config.pattern, cols, level);
+      // Calculate starting position to center the pattern
+      const patternWidth = pattern[0].length * blockSize;
+      const startX = (state.width - patternWidth) / 2;
+      // Position blocks higher on mobile to fit everything in view
+      const yStart = isMobile ? 40 : 60;
       
       pattern.forEach((row, r) => {
         row.forEach((shouldPlace, c) => {
           if (shouldPlace) {
-            const x = 20 + c * blockSize + gap / 2;
+            const x = startX + c * blockSize + gap / 2;
             const y = yStart + r * blockSize + gap / 2;
             const hp = config.hp; // Standardized HP - no random variation
-            const scratchSeed = Math.floor((x + y + level * 131) % 2147483647);
             
             world.blocks.push({ 
               x, y, 
               w: actualBlockSize, 
-              h: actualBlockSize, // Square blocks
-              type: 'rect', 
+              h: actualBlockSize,
               hp, 
-              maxHp: hp, 
-              crack: 0, 
-              scratchSeed,
-              level: level,
-              hitEffect: 0 // For realistic shading
+              maxHp: hp,
+              color: `hsl(${200 + level * 15}, 70%, ${60 - hp * 5}%)`,
+              hitTime: 0
             });
           }
         });
       });
       
-      // Update ball speed based on level and selected speed
+      // Update ball speed for this level
       world.currentBallSpeed = BALL_SPEED * config.ballSpeed * SPEED_MULTIPLIERS[selectedSpeed];
       world.levelConfig = config;
       
