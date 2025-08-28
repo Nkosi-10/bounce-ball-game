@@ -225,14 +225,20 @@
       const mouseX = clientX - rect.left;
       const mouseY = clientY - rect.top;
       
-      // Check if mouse is inside game area
+      // Check if mouse is inside game area OR mobile control area
       const isInsideGameArea = mouseX >= state.offsetX && mouseX <= state.offsetX + state.width;
-      input.isInsideGameArea = isInsideGameArea;
+      const isMobile = state.width <= 480;
+      const mobileControlAreaHeight = 80;
+      const isInMobileControlArea = isMobile && mouseY >= (state.height - mobileControlAreaHeight);
+      
+      // Allow control in game area OR mobile control area
+      const canControl = isInsideGameArea || isInMobileControlArea;
+      input.isInsideGameArea = canControl;
       
       // Update cursor based on position
-      if (isInsideGameArea) {
+      if (canControl) {
         canvas.style.cursor = 'crosshair';
-        // Update input position when inside game area
+        // Update input position when in control area
         input.x = clamp(mouseX - state.offsetX, 0, state.width);
         input.y = mouseY;
         
@@ -250,7 +256,7 @@
         }
       } else {
         canvas.style.cursor = 'default';
-        // Keep last known position when outside - don't update input.x or input.y
+        // Keep last known position when outside control areas
       }
     } catch (err) {
       console.warn('Error handling pointer:', err);
@@ -262,8 +268,8 @@
     input.isDown = true; 
     handlePointer(e);
     
-    // Launch ball if in aiming mode
-    if (state.mode === 'aiming' && world.ballOnPaddle) {
+    // Launch ball if in aiming mode and in control area
+    if (state.mode === 'aiming' && world.ballOnPaddle && input.isInsideGameArea) {
       launchBall();
     }
   }, { passive: false });

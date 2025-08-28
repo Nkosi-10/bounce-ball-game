@@ -369,7 +369,7 @@ body {
     right: 0;
     height: 80px;
     background: linear-gradient(180deg, transparent 0%, rgba(11, 14, 20, 0.8) 20%, rgba(11, 14, 20, 0.95) 100%);
-    pointer-events: none;
+    pointer-events: auto;
     z-index: 10;
     display: none;
   }
